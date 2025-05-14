@@ -58,7 +58,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
             image.draw(at: .zero)
 
             // 2. Set up overlay (black circle)
-            let circleSize: CGFloat = min(imageSize.width, imageSize.height) * 0.2
+            let circleSize: CGFloat = min(imageSize.width, imageSize.height) * 0.5
             let circleRect = CGRect(
                 x: (imageSize.width - circleSize) / 2,
                 y: (imageSize.height - circleSize) / 2,
@@ -66,7 +66,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
                 height: circleSize
             )
 
-            context.cgContext.setFillColor(UIColor.black.withAlphaComponent(0.6).cgColor)
+            context.cgContext.setFillColor(UIColor.yellow.withAlphaComponent(0.6).cgColor)
             context.cgContext.fillEllipse(in: circleRect)
         }
 

@@ -9,16 +9,16 @@ import SwiftUI
 
 struct CameraView: View {
     @StateObject private var camera = CameraViewModel()
-
+    
     var body: some View {
         ZStack {
             CameraPreview(session: camera.session)
                 .ignoresSafeArea()
             
-            Circle()
-                .fill(Color.black.opacity(0.6))
-                .frame(width: 100, height: 100)
-                .position(x: 200, y: 300)
+            Image("Glaucoma")
+                .resizable()
+                .aspectRatio( contentMode: .fill)
+                .ignoresSafeArea()
             
             VStack {
                 Spacer()
@@ -28,17 +28,18 @@ struct CameraView: View {
                         .scaledToFit()
                         .frame(height: 200)
                 }
-                Button(action: {
-                    camera.takePhoto()
-                }) {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 70, height: 70)
-                        .shadow(radius: 5)
-                }
-                .padding()
+                //                Button(action: {
+                //                    camera.takePhoto()
+                //                }) {
+                //                    Circle()
+                //                        .fill(Color.white)
+                //                        .frame(width: 70, height: 70)
+                //                        .shadow(radius: 5)
+                //                }
+                //                .padding()
             }
         }
+        .ignoresSafeArea()
         .onAppear {
             camera.configure()
         }
