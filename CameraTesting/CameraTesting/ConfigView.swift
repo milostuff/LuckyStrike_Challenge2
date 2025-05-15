@@ -25,12 +25,15 @@ struct ConfigView: View {
                     Text("Eye diseases")
                         .font(.headline)
                     HStack(spacing: 16) {
+                        Spacer()
                         VStack {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(Color.blue200)
                                 Image("Eye_Glaucoma")
                                     .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .padding(.horizontal, 4)
                             }
                             .frame(width: 100, height: 100)
                             Text("Glaucoma")
@@ -42,10 +45,13 @@ struct ConfigView: View {
                                     .fill(Color.blue200)
                                 Image("Eye_Cataract")
                                     .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .padding(.horizontal, 4)
                             }
                             .frame(width: 100, height: 100)
                             Text("Cataract")
                         }
+                        Spacer()
                     }
                     .frame(maxWidth: .infinity)
                 }
