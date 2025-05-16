@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct CameraView: View {
+    var eyemodel: EyeModel 
     @StateObject private var camera = CameraViewModel()
+    @State private var isOverlayHidden = false 
     
     var body: some View {
         ZStack {
-            CameraPreview(session: camera.session)
+            CameraPreview(eyeModel: eyemodel,session: camera.session)
                 .ignoresSafeArea()
             
-            Image("Glaucoma")
+            Image(eyemodel.eyeDisease.rawValue + "_" + eyemodel.severity.rawValue)
                 .resizable()
                 .aspectRatio( contentMode: .fill)
                 .ignoresSafeArea()
@@ -38,7 +40,13 @@ struct CameraView: View {
                 //                }
                 //                .padding()
             }
-        }
+        } .contentShape(Rectangle()) // Makes the whole area tappable
+            .onTapGesture {
+                isOverlayHidden.toggle()
+            }
+        .navigationBarBackButtonHidden(isOverlayHidden)
+        .navigationTitle(eyemodel.eyeDisease.rawValue)
+        .navigationBarTitleDisplayMode(.inline) // Keeps it compact
         .ignoresSafeArea()
         .onAppear {
             camera.configure()

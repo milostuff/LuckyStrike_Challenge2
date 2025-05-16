@@ -5,97 +5,90 @@
 import SwiftUI
 
 struct ConfigView: View {
-    @State private var selectedSeverity = 0
+    @StateObject var configState: EyeModel
+    @State private var showCameraView = false
+    
     var body: some View {
-        ZStack {
-            //Background color
-            Color.blue200.ignoresSafeArea()
-            
-            VStack(spacing: 24) {
-                // Header
-                VStack(spacing: 8) {
-                    Text("iEye")
-                        .font(.largeTitle)
-                    Text("Now you see it now you dont")
-                        .font(.headline)
-                }
-
-                // Eye diseases
-                VStack(spacing: 16) {
-                    Text("Eye diseases")
-                        .font(.headline)
-                    HStack(spacing: 16) {
-                        Spacer()
-                        VStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.blue200)
-                                Image("Eye_Glaucoma")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .padding(.horizontal, 4)
-                            }
-                            .frame(width: 100, height: 100)
-                            Text("Glaucoma")
-                        }
-                        Spacer()
-                        VStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.blue200)
-                                Image("Eye_Cataract")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .padding(.horizontal, 4)
-                            }
-                            .frame(width: 100, height: 100)
-                            Text("Cataract")
-                        }
-                        Spacer()
+        NavigationStack {
+            ZStack {
+                //Background color
+                Color.blue200.ignoresSafeArea()
+                
+                VStack(spacing: 18) {
+                    // Header
+                    VStack(spacing: 8) {
+                        Text("iEye")
+                            .font(.largeTitle)
+                        Text("Now you see it now you dont")
+                            .font(.headline)
                     }
-                    .frame(maxWidth: .infinity)
-                }
-                .padding()
-                .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
-
-                // Stage of Severity
-                VStack(spacing: 16) {
-                    Text("Stage of Severity")
-                        .font(.headline)
-                    Picker("", selection: $selectedSeverity) {
-                        Text("Early").tag(0)
-                        Text("Middle").tag(1)
-                        Text("Late").tag(2)
-                    }
-                    .padding(4)
-                    .pickerStyle(SegmentedPickerStyle())
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.blue200)
-                    )
-                }
-                .padding()
-                .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
-
-                // Start button
-                Button(action:{  }) {
-                    Text("Start the Simulation")
+                    
+                    // Eye diseases
+                    VStack(spacing: 16) {
+                        Text("Eye Diseases")
+                            .font(.headline)
+                        
+                        LazyVGrid(
+                            columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 2),
+                            spacing: 16
+                        ) {
+                            ForEach(EyeDisease.allCases, id: \.self) { disease in
+                                EyeButton(model: configState,
+                                          disease: disease)
+                            }
+                        }
                         .frame(maxWidth: .infinity)
-                        .frame(minHeight: 44)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.blue300))
-                        .foregroundColor(Color.blue0)
+                    }
+                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
+                    
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
+                    
+                    // Stage of Severity
+                    VStack(spacing: 16) {
+                        Text("Eye Diseases")
+                            .font(.headline)
+                        Picker("", selection: $configState.severity) {
+                            ForEach(Severity.allCases, id: \.self) { severity in
+                                Text(severity.rawValue)
+                            }
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding(4)
+                        .background(RoundedRectangle(cornerRadius: 12).fill(Color.blue200))
+                    }
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
+                    
+                    // Start button
+                    Button(action:navigateToLoading) {
+                        Text("Start the Simulation")
+                            .frame(maxWidth: .infinity)
+                            .frame(minHeight: 44)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.blue300))
+                            .foregroundColor(Color.blue0)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    Spacer()
                 }
-                .buttonStyle(PlainButtonStyle())
-
-                Spacer()
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
+            .navigationDestination(isPresented: $showCameraView) {
+                CameraView(eyemodel: configState)
+            }
         }
+    }
+    
+    
+    func navigateToLoading() {
+        showCameraView = true
     }
 }
 
 #Preview {
-    ConfigView()
+    ConfigView(configState: EyeModel(
+    ))
 }

@@ -11,7 +11,7 @@ import SwiftUI
 struct CameraTestingApp: App {
     var body: some Scene {
         WindowGroup {
-            CameraView()
+            ConfigView(configState:     EyeModel())
         }
     }
 }
