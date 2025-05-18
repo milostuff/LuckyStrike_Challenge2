@@ -1,55 +1,56 @@
-//
-//  CameraView.swift
-//  CameraTesting
-//
-//  Created by Franky on 10/05/25.
-//
-
 import SwiftUI
 
 struct CameraView: View {
-    var eyemodel: EyeModel 
+    var eyemodel: EyeModel
     @StateObject private var camera = CameraViewModel()
-    @State private var isOverlayHidden = false 
+    @State private var isOverlayHidden = false
     
     var body: some View {
         ZStack {
-            CameraPreview(eyeModel: eyemodel,session: camera.session)
+            // Camera Preview
+            CameraPreview(eyeModel: eyemodel, session: camera.session)
                 .ignoresSafeArea()
             
+            // Overlay Image
             Image(eyemodel.eyeDisease.rawValue + "_" + eyemodel.severity.rawValue)
                 .resizable()
-                .aspectRatio( contentMode: .fill)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
             
+            // Description Overlay
             VStack {
-                Spacer()
-                if let image = camera.capturedImage {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 200)
-                }
-                //                Button(action: {
-                //                    camera.takePhoto()
-                //                }) {
-                //                    Circle()
-                //                        .fill(Color.white)
-                //                        .frame(width: 70, height: 70)
-                //                        .shadow(radius: 5)
-                //                }
-                //                .padding()
+                Text(eyemodel.description)
+                    .padding()
+                    .frame(width: 300, height: 300)
+                    .background(Color.blue.opacity(0.8))
+                    .cornerRadius(18)
+                    .opacity(isOverlayHidden ? 0 : 1)
             }
-        } .contentShape(Rectangle()) // Makes the whole area tappable
-            .onTapGesture {
-                isOverlayHidden.toggle()
-            }
+            .ignoresSafeArea()  // Make sure the whole screen is tappable
+        }
         .navigationBarBackButtonHidden(isOverlayHidden)
-        .navigationTitle(eyemodel.eyeDisease.rawValue)
-        .navigationBarTitleDisplayMode(.inline) // Keeps it compact
-        .ignoresSafeArea()
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text(eyemodel.eyeDisease.rawValue)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .opacity(isOverlayHidden ? 0 : 1)
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                } label: {
+                    Image(systemName: "info.circle.fill")
+                        .foregroundColor(.white)
+                }
+                .opacity(isOverlayHidden ? 0 : 1)
+            }
+        }
         .onAppear {
             camera.configure()
         }
+        .onTapGesture {
+            isOverlayHidden.toggle()
+        }
     }
-}
+} 
