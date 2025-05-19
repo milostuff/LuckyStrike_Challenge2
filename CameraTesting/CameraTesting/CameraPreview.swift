@@ -18,11 +18,11 @@ struct CameraPreview: UIViewRepresentable {
         let previewLayer = AVCaptureVideoPreviewLayer(session: session)
         previewLayer.videoGravity = .resizeAspectFill
         previewLayer.frame = UIScreen.main.bounds
+     
         view.layer.addSublayer(previewLayer)
         
         // Add a blur effect on top
         setupView(view: view, eyeModel: eyeModel)
-        
         return view
     }
     
@@ -58,7 +58,7 @@ struct CameraPreview: UIViewRepresentable {
             view.addSubview(blurView)
         }
     }
-
+    
     
     func updateUIView(_ uiView: UIView, context: Context) {}
 }

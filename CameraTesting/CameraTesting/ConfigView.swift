@@ -14,73 +14,71 @@ struct ConfigView: View {
                 //Background color
                 Color.blue200.ignoresSafeArea()
                 
-                VStack(spacing: 18) {
-                    // Header
-                    VStack(spacing: 8) {
-                        Text("iEye")
-                            .font(.largeTitle)
-                        Text("Now you see it now you dont")
-                            .font(.headline)
-                    }
-                    
-                    // Eye diseases
-                    VStack(spacing: 16) {
-                        Text("Eye Diseases")
-                            .font(.headline)
+                ZStack {
+                    HStack(spacing: 18) {
+                        // Header
+                        //                    VStack(spacing: 8) {
+                        //                        Text("iEye")
+                        //                            .font(.largeTitle)
+                        //                        Text("Now you see it now you dont")
+                        //                            .font(.headline)
+                        //                    }
                         
-                        LazyVGrid(
-                            columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 2),
-                            spacing: 16
-                        ) {
-                            EyeButton(model: configState, disease: EyeDisease.Glaucoma)
-                            
-                            EyeButton(model: configState, disease: EyeDisease.DiabeticRetinopathy)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
-                    
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
-                    
-                    // Stage of Severity
-                    VStack(spacing: 16) {
-                        Text("Eye Diseases")
-                            .font(.headline)
-                        Picker("", selection: $configState.severity) {
-                            ForEach(Severity.allCases, id: \.self) { severity in
-                                Text(severity.rawValue)
+                        // Eye diseases
+                        VStack(spacing: 16) {
+                            Text("Glaucoma")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            VStack(alignment: .leading)
+                            {
+                                EyeButton(model: configState, disease: EyeDisease.Glaucoma) 
                             }
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding(4)
-                        .background(RoundedRectangle(cornerRadius: 12).fill(Color.blue200))
-                    }
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
-                    
-                    // Start button
-                    Button(action:navigateToLoading) {
-                        Text("Start the Simulation")
                             .frame(maxWidth: .infinity)
-                            .frame(minHeight: 44)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.blue300))
-                            .foregroundColor(Color.blue0)
+                        }
+                        .padding()
+                        
+                        
+                        VStack()
+                        {
+                            // Stage of Severity
+                            VStack(spacing: 16) {
+                                Text("Eye Diseases")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                Picker("", selection: $configState.severity) {
+                                    ForEach(Severity.allCases, id: \.self) { severity in
+                                        Text(severity.rawValue)
+                                    }
+                                }
+                                .pickerStyle(SegmentedPickerStyle())
+                                .padding(4)
+                                .background(RoundedRectangle(cornerRadius: 12).fill(Color.blue200))
+                                
+                                // Start button
+                                Button(action:navigateToLoading) {
+                                    Text("Start the Simulation")
+                                        .frame(maxWidth: .infinity)
+                                        .frame(minHeight: 44)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .fill(Color.blue300))
+                                        .foregroundColor(Color.blue0)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                            .padding()
+                        }
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    Spacer()
+                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white))
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 120)
             }
+            .ignoresSafeArea()
             .navigationDestination(isPresented: $showCameraView) {
                 CameraView(eyemodel: configState)
             }
         }
-    }
-    
+    } 
     
     func navigateToLoading() {
         showCameraView = true
