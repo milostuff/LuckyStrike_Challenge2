@@ -32,10 +32,9 @@ struct ConfigView: View {
                             columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 2),
                             spacing: 16
                         ) {
-                            ForEach(EyeDisease.allCases, id: \.self) { disease in
-                                EyeButton(model: configState,
-                                          disease: disease)
-                            }
+                            EyeButton(model: configState, disease: EyeDisease.Glaucoma)
+                            
+                            EyeButton(model: configState, disease: EyeDisease.DiabeticRetinopathy)
                         }
                         .frame(maxWidth: .infinity)
                     }
