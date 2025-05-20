@@ -31,6 +31,8 @@ struct CameraView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: UIScreen.main.bounds.height * 0.6)
                         
+                        Spacer()
+                        
                         VStack {
                             Text("Description")
                                 .font(.title3)
