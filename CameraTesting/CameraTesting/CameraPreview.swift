@@ -18,11 +18,20 @@ struct CameraPreview: UIViewRepresentable {
         let previewLayer = AVCaptureVideoPreviewLayer(session: session)
         previewLayer.videoGravity = .resizeAspectFill
         previewLayer.frame = UIScreen.main.bounds
+        
+        // Set the initial orientation
+        updatePreviewLayerOrientation(previewLayer)
      
         view.layer.addSublayer(previewLayer)
         
         // Add a blur effect on top
         setupView(view: view, eyeModel: eyeModel)
+        
+        // Save the previewLayer as a tag so we can access it in updateUIView
+        if let previewLayer = view.layer.sublayers?.first as? AVCaptureVideoPreviewLayer {
+            view.tag = 1001  // Use this tag to identify the view with previewLayer
+        }
+        
         return view
     }
     
@@ -59,6 +68,47 @@ struct CameraPreview: UIViewRepresentable {
         }
     }
     
+    func updateUIView(_ uiView: UIView, context: Context) {
+        // Update the preview layer orientation when the view is updated
+        if uiView.tag == 1001, let previewLayer = uiView.layer.sublayers?.first as? AVCaptureVideoPreviewLayer {
+            updatePreviewLayerOrientation(previewLayer)
+            previewLayer.frame = UIScreen.main.bounds
+        }
+        
+        // Refresh the blur effect
+        setupView(view: uiView, eyeModel: eyeModel)
+    }
     
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    private func updatePreviewLayerOrientation(_ previewLayer: AVCaptureVideoPreviewLayer) {
+        guard let connection = previewLayer.connection else { return }
+        
+        let currentDevice = UIDevice.current
+        let orientation = currentDevice.orientation
+        
+        guard let interfaceOrientation = windowInterfaceOrientation() else { return }
+        
+        let videoOrientation: AVCaptureVideoOrientation
+        
+        switch interfaceOrientation {
+        case .landscapeLeft:
+            videoOrientation = .landscapeLeft  // Interface and video orientations are mirrored
+        case .landscapeRight:
+            videoOrientation = .landscapeRight
+        case .portraitUpsideDown:
+            videoOrientation = .portraitUpsideDown
+        default:
+            videoOrientation = .portrait
+        }
+        
+        connection.videoOrientation = videoOrientation
+    }
+    
+    // Helper method to get the current interface orientation
+    private func windowInterfaceOrientation() -> UIInterfaceOrientation? {
+        if #available(iOS 13.0, *) {
+            return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation
+        } else {
+            return UIApplication.shared.statusBarOrientation
+        }
+    }
 }

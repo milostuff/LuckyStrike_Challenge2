@@ -10,7 +10,6 @@ enum DiseaseLongDescription: String, CaseIterable {
     case Glaucoma = """
     Glaucoma is a group of eye diseases that damage the optic nerve, often due to elevated intraocular pressure, leading to irreversible vision loss.
     
-    
     While it cannot be prevented, early detection can effectively slow or halt its progression.
     """
     case Cataract = "A cataract is a clouding of the lens in the eye that can cause vision loss."

@@ -7,6 +7,7 @@ import SwiftUI
 
 class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     @Published var capturedImage: UIImage?
+    @Published var orientation = UIDevice.current.orientation
     let session = AVCaptureSession()
     private let output = AVCapturePhotoOutput()
     private let queue = DispatchQueue(label: "camera.queue")
@@ -31,8 +32,7 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         session.addInput(input)
         session.addOutput(output)
         
-        // Set initial orientation
-        updateOrientation()
+        // We'll handle orientation in the preview layer directly
         
         queue.async { self.session.startRunning() }
     }
@@ -45,30 +45,40 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
     }
     
     @objc func orientationChanged() {
-        updateOrientation()
-    }
-    
-    func updateOrientation() {
-        guard let connection = output.connection(with: .video) else { return }
-        switch UIDevice.current.orientation {
-        case .landscapeLeft:
-            connection.videoRotationAngle = 90
-            print(connection.videoRotationAngle)
-        case .landscapeRight:
-            connection.videoRotationAngle = 270
-            print(connection.videoRotationAngle)
-        case .portrait:
-            connection.videoRotationAngle = 0
-        case .portraitUpsideDown:
-            connection.videoRotationAngle = 0
-        default:
-            break
+        // Update published orientation to trigger UI updates
+        DispatchQueue.main.async {
+            self.orientation = UIDevice.current.orientation
         }
     }
     
     func takePhoto() {
         let settings = AVCapturePhotoSettings()
+        
+        // Ensure connection is properly set based on current orientation
+        if let photoOutputConnection = output.connection(with: .video) {
+            photoOutputConnection.videoOrientation = getVideoOrientation()
+        }
+        
         output.capturePhoto(with: settings, delegate: self)
+    }
+    
+    private func getVideoOrientation() -> AVCaptureVideoOrientation {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
+            return .portrait
+        }
+        
+        let orientation = windowScene.interfaceOrientation
+        
+        switch orientation {
+        case .landscapeLeft:
+            return .landscapeRight
+        case .landscapeRight:
+            return .landscapeLeft
+        case .portraitUpsideDown:
+            return .portraitUpsideDown
+        default:
+            return .portrait
+        }
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput,
@@ -105,5 +115,9 @@ class CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate
         }
         
         return finalImage
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
